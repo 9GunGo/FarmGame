@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>农场游戏</title>
+    <style>
+        #gameCanvas{
+            border:1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="gameCanvas" width="500" height="500"></canvas>
+
+    <script>
+        let score = 0;
+        let timeLeft = 30;
+        let pos = {};
+        let canvas = document.getElementById("gameCanvas");
+        let ctx = canvas.getContext("2d");
+        document.addEventListener("click",function(e){
+            pos.x = e.clientX;
+            pos.y = e.clientY;
+
+            // console.log(pos);
+                
+        })
+        const fruits = [
+            { x: 100, y: 200, w: 50, name: 'apple' },
+            { x: 300, y: 250, w: 40, name: 'banana' },
+            { x: 200, y: 150, w: 60, name: 'orange' },
+        ];
+        
+        // 在canvas上绘制目标并检测点击
+        function drawAndCheckClicks() {
+            // 绘制代码
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 随机绘制两个水果
+            for (let f of fruits) {
+                // console.log(f)
+                ctx.fillStyle = f.name === 'apple' ? 'red' : 'yellow';
+                ctx.fillRect(f.x, f.y, f.w, f.w);
+            }
+            
+            for (let f of fruits){
+                if(isClicked(pos.x,pos.y,f)){
+                    score++;
+                    // fruits.splice(0, 1);
+                    console.log(score)
+                }
+            }
+            
+
+            // if(fruits.length < 2){
+            //     generateNewFruit()
+            // }
+
+        }
+
+        function isClicked(x,y,rect){
+            return (x>=rect.x && y>=rect.y 
+            && x<=rect.x + rect.w && y <= rect.y + rect.w);
+        }
+
+        function generateNewFruit(fruit){
+            const types = ['apple', 'banana', 'orange'];
+
+            const x = randomNumber(0, canvas.width - 50);
+            const y = randomNumber(0, canvas.height - 50);
+            const w = randomNumber(30, 50);
+
+            // const typeIndex = randomNumber(0, types.length);
+
+            // fruits.push({
+            //     x, 
+            //     y,
+            //     w,
+            //     name: types[typeIndex]
+            // });
+            for(let f of fruits){
+                if(f.name === fruit.name){
+                    f.x = x;
+                    f.y = y;
+                    f.w = w;
+                }
+            }
+        }
+
+        // 返回min和max之间的随机数
+        function randomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // 每秒调用更新游戏
+        function updateGame() {
+            drawAndCheckClicks();
+            timeLeft--;
+            console.log(timeLeft);
+            if (timeLeft === 0) {
+                // 结束游戏
+                alert('Game over! Your score is ' + score);
+                return;
+            }
+            // 替换随机水果
+            const index = Math.floor(Math.random() * fruits.length);
+            generateNewFruit(fruits[index]);
+            // if(timeLeft&&timeLeft%3===0){
+                requestAnimationFrame(updateGame);
+            // }
+            
+            // setTimeout(() => {
+            //     updateGame()
+            // }, 3000);
+        }
+
+        // 开始游戏
+        // 等待页面加载完成后再运行代码
+        window.onload = function () {
+            updateGame();
+        };
+
+    </script>
+</body>
+
+</html>
